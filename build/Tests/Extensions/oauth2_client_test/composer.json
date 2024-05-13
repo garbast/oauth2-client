@@ -1,5 +1,5 @@
 {
-    "name": "waldhacker/typo3-oauth2-client-test",
+    "name": "co-stack/typo3-oauth2-client-test",
     "description": "TYPO3 OAuth2 Login Client test extension",
     "license": [
         "GPL-2.0-or-later"
@@ -18,7 +18,7 @@
         "issues": "https://github.com/waldhacker/ext-oauth2-client/issues"
     },
     "require": {
-        "waldhacker/typo3-oauth2-client": "*@dev"
+        "co-stack/typo3-oauth2-client": "*@dev"
     },
     "autoload": {
         "psr-4": {
