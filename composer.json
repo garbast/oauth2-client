@@ -28,10 +28,10 @@
         "ext-pdo": "*",
         "league/oauth2-client": "^2.7",
         "psr/log": "*",
-        "typo3/cms-backend": "^11.5@dev || ^12.4@dev",
-        "typo3/cms-core": "^11.5@dev || ^12.4@dev",
-        "typo3/cms-fluid": "^11.5@dev || ^12.4@dev",
-        "typo3/cms-setup": "^11.5@dev || ^12.4@dev"
+        "typo3/cms-backend": "^11.5@dev || ^12.4@dev || ^13.4@dev",
+        "typo3/cms-core": "^11.5@dev || ^12.4@dev || ^13.4@dev",
+        "typo3/cms-fluid": "^11.5@dev || ^12.4@dev || ^13.4@dev",
+        "typo3/cms-setup": "^11.5@dev || ^12.4@dev || ^13.4@dev"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.23",

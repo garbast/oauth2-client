@@ -33,14 +33,13 @@ class Oauth2ProvidersElement extends AbstractFormElement
     private Oauth2ProviderManager $oauth2ProviderManager;
     private UriBuilder $uriBuilder;
 
-    public function __construct(NodeFactory $NodeFactory, array $data)
+    public function __construct()
     {
-        parent::__construct($NodeFactory, $data);
         $this->uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $this->oauth2ProviderManager = GeneralUtility::makeInstance(Oauth2ProviderManager::class);
     }
 
-    public function render()
+    public function render(): array
     {
         $resultArray = $this->initializeResultArray();
         $tableName = $this->data['tableName'];

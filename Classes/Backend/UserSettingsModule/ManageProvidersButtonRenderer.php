@@ -46,20 +46,19 @@ class ManageProvidersButtonRenderer
     {
         $html = '';
         $lang = $this->getLanguageService();
-        $lang->includeLLFile('EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf');
         $activeProviders = $this->backendUserRepository->getActiveProviders();
         $hasActiveProviders = count($activeProviders) > 0;
         if ($hasActiveProviders) {
-            $html .= ' <span class="badge badge-success">' . htmlspecialchars($lang->getLL('oauth2Providers.enabled'), ENT_QUOTES | ENT_HTML5) . '</span>';
+            $html .= ' <span class="badge badge-success">' . htmlspecialchars($lang->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:oauth2Providers.enabled'), ENT_QUOTES | ENT_HTML5) . '</span>';
         }
-        $html .= '<p class="text-muted">' . nl2br(htmlspecialchars($lang->getLL('oauth2Providers.description'), ENT_QUOTES | ENT_HTML5)) . '</p>';
+        $html .= '<p class="text-muted">' . nl2br(htmlspecialchars($lang->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:oauth2Providers.description'), ENT_QUOTES | ENT_HTML5)) . '</p>';
         if ($this->oauth2ProviderManager->getConfiguredBackendProviders() === null) {
-            $html .= '<span class="badge badge-danger">' . htmlspecialchars($lang->getLL('oauth2Providers.notAvailable'), ENT_QUOTES | ENT_HTML5) . '</span><br />';
+            $html .= '<span class="badge badge-danger">' . htmlspecialchars($lang->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:oauth2Providers.notAvailable'), ENT_QUOTES | ENT_HTML5) . '</span><br />';
         } else {
             $html .= '<a href="' .
                      htmlspecialchars((string)$this->uriBuilder->buildUriFromRoute('oauth2_manage_providers'), ENT_QUOTES | ENT_HTML5) . '" class="btn btn-' . ($activeProviders ? 'default' : 'success') . '">';
             $html .= GeneralUtility::makeInstance(IconFactory::class)->getIcon($hasActiveProviders ? 'actions-cog' : 'actions-add', Icon::SIZE_SMALL);
-            $html .= ' <span>' . htmlspecialchars($lang->getLL('oauth2Providers.' . ($activeProviders ? 'manageLinkTitle' : 'setupLinkTitle')), ENT_QUOTES | ENT_HTML5) . '</span>';
+            $html .= ' <span>' . htmlspecialchars($lang->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:oauth2Providers.' . ($activeProviders ? 'manageLinkTitle' : 'setupLinkTitle')), ENT_QUOTES | ENT_HTML5) . '</span>';
             $html .= '</a>';
         }
         return $html;
