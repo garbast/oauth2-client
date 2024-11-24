@@ -20,13 +20,10 @@ namespace Waldhacker\Oauth2Client\Backend\SiteConfig;
 
 use Waldhacker\Oauth2Client\Service\Oauth2ProviderManager;
 
-class ConfiguredFrontendProvidersItemsProcFunc
+readonly class ConfiguredFrontendProvidersItemsProcFunc
 {
-    private Oauth2ProviderManager $oauth2ProviderManager;
-
-    public function __construct(Oauth2ProviderManager $oauth2ProviderManager)
+    public function __construct(private Oauth2ProviderManager $oauth2ProviderManager)
     {
-        $this->oauth2ProviderManager = $oauth2ProviderManager;
     }
 
     public function getItems(array &$params): void

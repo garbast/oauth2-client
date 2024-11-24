@@ -14,10 +14,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
+defined('TYPO3') or die();
+
 (static function () {
     $languageFile = 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:';
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('be_users', [
+    ExtensionManagementUtility::addTCAcolumns('be_users', [
         'tx_oauth2_client_configs' => [
             'label' => $languageFile . 'tx_oauth2_client_config',
             'exclude' => true,
@@ -29,5 +33,5 @@
             ],
         ],
     ]);
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('be_users', 'tx_oauth2_client_configs', '', 'before:avatar');
+    ExtensionManagementUtility::addToAllTCAtypes('be_users', 'tx_oauth2_client_configs', '', 'before:avatar');
 })();

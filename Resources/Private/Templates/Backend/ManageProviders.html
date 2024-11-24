@@ -9,7 +9,7 @@
         includeJsFiles="{0: 'EXT:oauth2_client/Resources/Public/JavaScript/register.js' }"
     />
     <h1>
-        <f:translate key="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.title" />
+        <f:translate id="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.title" />
     </h1>
 
     <f:if condition="{providers}">
@@ -33,14 +33,14 @@
             </form>
         </f:then>
         <f:else>
-            <f:translate key="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:oauth2Providers.notAvailable" />
+            <f:translate id="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:oauth2Providers.notAvailable" />
         </f:else>
     </f:if>
 </f:section>
 
 
 <f:section name="Item">
-    <f:variable name="providerLabel" value ="{f:translate(key: provider.label, default: provider.label)}" />
+    <f:variable name="providerLabel" value ="{f:translate(id: provider.label, default: provider.label)}" />
     <f:variable name="providerIsActive" value ="{f:if(condition: '{activeProviders.{provider.identifier}.uid}', then: 1, else: 0)}" />
 
     <div class="card card-size-fixed-small" id="{identifier}-provider">
@@ -55,12 +55,12 @@
                     <f:if condition="{providerIsActive}">
                         <f:then>
                             <span class="badge badge-success">
-                                <f:translate key="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.badge.active" />
+                                <f:translate id="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.badge.active" />
                             </span>
                         </f:then>
                         <f:else>
                             <span class="badge badge-info">
-                                <f:translate key="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.badge.inactive" />
+                                <f:translate id="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.badge.inactive" />
                             </span>
                         </f:else>
                     </f:if>
@@ -69,31 +69,31 @@
         </div>
         <div class="card-body">
             <p class="card-text">
-                <f:if condition="{provider.description}"><f:translate key="{provider.description}" default="{provider.description}" /></f:if>
+                <f:if condition="{provider.description}"><f:translate id="{provider.description}" default="{provider.description}" /></f:if>
             </p>
         </div>
         <div class="card-footer">
             <f:if condition="{providerIsActive}">
                 <f:then>
                     <a
-                        href="{be:moduleLink(route:'tce_db', query:'cmd[tx_oauth2_beuser_provider_configuration][{activeProviders.{provider.identifier}.uid}][delete]=1', currentUrlParameterName:'redirect')}"
+                        href="{be:moduleLink(route: 'tce_db', query: 'cmd[tx_oauth2_beuser_provider_configuration][{activeProviders.{provider.identifier}.uid}][delete]=1', currentUrlParameterName: 'redirect')}"
                         class="btn btn-danger t3js-modal-trigger"
-                        title="{f:translate(key:'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.deactivateLinkTitle', arguments: {0: providerLabel})}"
-                        data-title="{f:translate(key:'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:buttons.deactivateProvider', arguments: {0: providerLabel})}"
-                        data-bs-content="{f:translate(key:'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:buttons.deactivateProvider.confirmation.text', arguments: {0: providerLabel})}"
+                        title="{f:translate(id: 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.deactivateLinkTitle', arguments: {0: providerLabel})}"
+                        data-title="{f:translate(id: 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:buttons.deactivateProvider', arguments: {0: providerLabel})}"
+                        data-bs-content="{f:translate(id: 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:buttons.deactivateProvider.confirmation.text', arguments: {0: providerLabel})}"
                     >
                         <core:icon identifier="actions-toggle-on" />
-                        <f:translate key="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.deactivateLinkLabel" />
+                        <f:translate id="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.deactivateLinkLabel" />
                     </a>
                 </f:then>
                 <f:else>
                     <button
-                        data-oauth2-provider="{f:be.uri(route:'oauth2_registration_authorize', parameters:'{action: \'authorize\', oauth2-provider: provider.identifier}', referenceType: 'url')}"
+                        data-oauth2-provider="{f:be.uri(route: 'oauth2_registration_authorize', parameters: '{action: \'authorize\', oauth2-provider: provider.identifier}', referenceType: 'url')}"
                         class="btn btn-success"
-                        title="{f:translate(key:'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.activateLinkTitle', arguments: {0: providerLabel})}"
+                        title="{f:translate(id: 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.activateLinkTitle', arguments: {0: providerLabel})}"
                     >
                         <core:icon identifier="actions-toggle-off" />
-                        <f:translate key="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.activateLinkLabel" />
+                        <f:translate id="LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:overview.activateLinkLabel" />
                     </button>
                 </f:else>
             </f:if>

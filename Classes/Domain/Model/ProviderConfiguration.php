@@ -18,40 +18,31 @@ declare(strict_types=1);
 
 namespace Waldhacker\Oauth2Client\Domain\Model;
 
+use InvalidArgumentException;
 use League\OAuth2\Client\Provider\AbstractProvider;
 
-class ProviderConfiguration
+readonly class ProviderConfiguration
 {
-    private string $label;
-    private string $description;
-    private string $iconIdentifier;
-    private string $identifier;
-    private string $implementationClassName;
-    private array $scopes;
-    private array $options;
-    private array $collaborators;
-
     public function __construct(
-        string $identifier,
-        string $label,
-        string $description,
-        string $iconIdentifier,
-        string $implementationClassName,
-        array $scopes,
-        array $options,
-        array $collaborators
+        private string $identifier,
+        private string $label,
+        private string $description,
+        private string $iconIdentifier,
+        private string $implementationClassName,
+        private array $scopes,
+        private array $options,
+        private array $collaborators
     ) {
-        $this->label = $label;
-        $this->description = $description;
-        $this->iconIdentifier = $iconIdentifier;
-        $this->identifier = $identifier;
-        if (!class_exists($implementationClassName) || !is_a($implementationClassName, AbstractProvider::class, true)) {
-            throw new \InvalidArgumentException('Registered class ' . $implementationClassName . ' does not exist or is not an implementation of ' . AbstractProvider::class, 1642867945);
+        if (
+            !class_exists($this->implementationClassName)
+            || !is_a($this->implementationClassName, AbstractProvider::class, true)
+        ) {
+            throw new InvalidArgumentException(
+                'Registered class ' . $this->implementationClassName
+                . ' does not exist or is not an implementation of ' . AbstractProvider::class,
+                1642867945
+            );
         }
-        $this->implementationClassName = $implementationClassName;
-        $this->scopes = $scopes;
-        $this->options = $options;
-        $this->collaborators = $collaborators;
     }
 
     public function getLabel(): string

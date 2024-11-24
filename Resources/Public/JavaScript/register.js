@@ -1,6 +1,6 @@
 let windowObjectReference = null;
 let previousUrl = null;
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
   const btns = document.querySelectorAll('button[data-oauth2-provider]');
   btns.forEach(btn => {
     btn.addEventListener('click', (evt) => {
@@ -27,7 +27,6 @@ const openSignInWindow = (url, name) => {
   previousUrl = url;
 };
 
-
 const receiveMessage = event => {
   console.log(event.origin)
   if (event.origin !== window.location.origin || event.source.origin !== window.location.origin) {
@@ -39,5 +38,5 @@ const receiveMessage = event => {
   document.getElementById('oauth2-code').value = urlParams.get('code')
   document.getElementById('oauth2-state').value = urlParams.get('state')
   document.getElementById('oauth2-provider').value = urlParams.get('oauth2-provider')
-  document.getElementById("oauth2-authorize").submit();
+  document.getElementById('oauth2-authorize').submit();
 };

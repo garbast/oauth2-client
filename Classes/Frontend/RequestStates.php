@@ -34,16 +34,18 @@ class RequestStates
 
     public function isCurrentController(string $controllerName, ServerRequestInterface $request): bool
     {
-        return $request->getAttribute(self::CONTROLLER_ATTRIBUTE, null) === $controllerName;
+        return $request->getAttribute(self::CONTROLLER_ATTRIBUTE) === $controllerName;
     }
 
     public function isCurrentAction(string $actionName, ServerRequestInterface $request): bool
     {
-        return $request->getAttribute(self::ACTION_ATTRIBUTE, null) === $actionName;
+        return $request->getAttribute(self::ACTION_ATTRIBUTE) === $actionName;
     }
 
-    public function setCurrentController(string $controllerName, ServerRequestInterface $request): ServerRequestInterface
-    {
+    public function setCurrentController(
+        string $controllerName,
+        ServerRequestInterface $request
+    ): ServerRequestInterface {
         return $request->withAttribute(self::CONTROLLER_ATTRIBUTE, $controllerName);
     }
 

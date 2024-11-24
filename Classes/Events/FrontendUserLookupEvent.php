@@ -26,30 +26,15 @@ use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 
 final class FrontendUserLookupEvent
 {
-    private string $providerId;
-    private AbstractProvider $provider;
-    private AccessTokenInterface $accessToken;
-    private ResourceOwnerInterface $remoteUser;
-    private ?array $typo3User;
-    private ?SiteInterface $site;
-    private ?SiteLanguage $language;
-
     public function __construct(
-        string $providerId,
-        AbstractProvider $provider,
-        AccessTokenInterface $accessToken,
-        ResourceOwnerInterface $remoteUser,
-        ?array $typo3User,
-        ?SiteInterface $site,
-        ?SiteLanguage $language
+        private readonly string $providerId,
+        private readonly AbstractProvider $provider,
+        private readonly AccessTokenInterface $accessToken,
+        private readonly ResourceOwnerInterface $remoteUser,
+        private ?array $typo3User,
+        private readonly ?SiteInterface $site,
+        private readonly ?SiteLanguage $language
     ) {
-        $this->providerId = $providerId;
-        $this->provider = $provider;
-        $this->accessToken = $accessToken;
-        $this->remoteUser = $remoteUser;
-        $this->typo3User = $typo3User;
-        $this->site = $site;
-        $this->language = $language;
     }
 
     public function getProviderId(): string

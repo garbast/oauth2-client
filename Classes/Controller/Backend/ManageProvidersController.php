@@ -18,7 +18,6 @@ declare(strict_types=1);
 
 namespace Waldhacker\Oauth2Client\Controller\Backend;
 
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -29,34 +28,18 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 use Waldhacker\Oauth2Client\Repository\BackendUserRepository;
 use Waldhacker\Oauth2Client\Service\Oauth2ProviderManager;
 
 class ManageProvidersController extends AbstractBackendController
 {
-    private Oauth2ProviderManager $oauth2ProviderManager;
-    private BackendUserRepository $backendUserRepository;
-    private ModuleTemplateFactory $moduleTemplateFactory;
-    private UriBuilder $uriBuilder;
-    private ResponseFactoryInterface $responseFactory;
-    private IconFactory $iconFactory;
-
     public function __construct(
-        Oauth2ProviderManager $oauth2ProviderManager,
-        BackendUserRepository $backendUserRepository,
-        ModuleTemplateFactory $moduleTemplate,
-        UriBuilder $uriBuilder,
-        ResponseFactoryInterface $responseFactory,
-        IconFactory $iconFactory
+        private readonly Oauth2ProviderManager $oauth2ProviderManager,
+        private readonly BackendUserRepository $backendUserRepository,
+        private readonly UriBuilder $uriBuilder,
+        private readonly IconFactory $iconFactory,
+        private readonly ModuleTemplateFactory $moduleTemplateFactory
     ) {
-        $this->oauth2ProviderManager = $oauth2ProviderManager;
-        $this->backendUserRepository = $backendUserRepository;
-        $this->moduleTemplateFactory = $moduleTemplate;
-        $this->uriBuilder = $uriBuilder;
-        $this->responseFactory = $responseFactory;
-        $this->iconFactory = $iconFactory;
     }
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
@@ -72,6 +55,7 @@ class ManageProvidersController extends AbstractBackendController
 
     private function addButtons(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
     {
+        $languageFile = 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:';
         $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
 
         if (($returnUrl = $this->getReturnUrl($request)) !== '') {
@@ -79,7 +63,7 @@ class ManageProvidersController extends AbstractBackendController
                 ->makeLinkButton()
                 ->setHref($returnUrl)
                 ->setIcon($this->iconFactory->getIcon('actions-view-go-back', Icon::SIZE_SMALL))
-                ->setTitle($this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.goBack'))
+                ->setTitle($this->getLanguageService()->sL($languageFile . 'labels.goBack'))
                 ->setShowLabelText(true);
             $buttonBar->addButton($button);
         }
@@ -87,7 +71,7 @@ class ManageProvidersController extends AbstractBackendController
         $reloadButton = $buttonBar
             ->makeLinkButton()
             ->setHref($request->getAttribute('normalizedParams')->getRequestUri())
-            ->setTitle($this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.reload'))
+            ->setTitle($this->getLanguageService()->sL($languageFile . 'labels.reload'))
             ->setIcon($this->iconFactory->getIcon('actions-refresh', Icon::SIZE_SMALL));
         $buttonBar->addButton($reloadButton, ButtonBar::BUTTON_POSITION_RIGHT);
     }
@@ -96,7 +80,7 @@ class ManageProvidersController extends AbstractBackendController
     {
         $queryParams = $request->getQueryParams();
         $parsedBody = $request->getParsedBody();
-        if (is_array($queryParams) && isset($queryParams['returnUrl'])) {
+        if (isset($queryParams['returnUrl'])) {
             $returnUrl = $queryParams['returnUrl'];
         } elseif (is_array($parsedBody) && isset($parsedBody['returnUrl'])) {
             $returnUrl = $parsedBody['returnUrl'];

@@ -24,24 +24,13 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
 
 final class BackendUserLookupEvent
 {
-    private string $providerId;
-    private AbstractProvider $provider;
-    private AccessTokenInterface $accessToken;
-    private ResourceOwnerInterface $remoteUser;
-    private ?array $typo3User;
-
     public function __construct(
-        string $providerId,
-        AbstractProvider $provider,
-        AccessTokenInterface $accessToken,
-        ResourceOwnerInterface $remoteUser,
-        ?array $typo3User
+        private readonly string $providerId,
+        private readonly AbstractProvider $provider,
+        private readonly AccessTokenInterface $accessToken,
+        private readonly ResourceOwnerInterface $remoteUser,
+        private ?array $typo3User
     ) {
-        $this->providerId = $providerId;
-        $this->provider = $provider;
-        $this->accessToken = $accessToken;
-        $this->remoteUser = $remoteUser;
-        $this->typo3User = $typo3User;
     }
 
     public function getProviderId(): string

@@ -18,13 +18,13 @@ declare(strict_types=1);
 
 namespace Waldhacker\Oauth2Client\Service;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequestFactory;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SiteService
 {
@@ -32,22 +32,14 @@ class SiteService
 
     public function getSite(ServerRequestInterface $request = null): ?SiteInterface
     {
-        $tsfe = $this->getTypoScriptFrontendController();
-        if ($tsfe) {
-            return $tsfe->getSite();
-        }
         $request = $this->getRequest($request);
-        return $request->getAttribute('site', null);
+        return $request->getAttribute('site');
     }
 
     public function getLanguage(ServerRequestInterface $request = null): ?SiteLanguage
     {
-        $tsfe = $this->getTypoScriptFrontendController();
-        if ($tsfe) {
-            return $tsfe->getLanguage();
-        }
         $request = $this->getRequest($request);
-        return $request->getAttribute('language', null);
+        return $request->getAttribute('language');
     }
 
     public function buildCallbackUri(array $queryParameters, ServerRequestInterface $request = null): string
@@ -55,7 +47,7 @@ class SiteService
         return sprintf(
             '%s?%s',
             $this->buildCallbackBaseUri($request),
-            \http_build_query($queryParameters)
+            http_build_query($queryParameters)
         );
     }
 
@@ -107,16 +99,14 @@ class SiteService
         return empty($callbackSlug) ? self::CALLBACK_SLUG : $callbackSlug;
     }
 
-    private function getTypoScriptFrontendController(): ?TypoScriptFrontendController
-    {
-        return $GLOBALS['TSFE'] ?? null;
-    }
-
     private function getRequest(ServerRequestInterface $request = null): ServerRequestInterface
     {
         $request = $request ?? $GLOBALS['TYPO3_REQUEST'] ?? ServerRequestFactory::fromGlobals();
         if (!($request instanceof ServerRequestInterface)) {
-            throw new \InvalidArgumentException(sprintf('Request must implement "%s"', ServerRequestInterface::class), 1643446000);
+            throw new InvalidArgumentException(
+                sprintf('Request must implement "%s"', ServerRequestInterface::class),
+                1643446000
+            );
         }
         return $request;
     }

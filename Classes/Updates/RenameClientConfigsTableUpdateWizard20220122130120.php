@@ -29,7 +29,7 @@ use Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2BeUserProviderConfi
 class RenameClientConfigsTableUpdateWizard20220122130120 implements UpgradeWizardInterface, ChattyInterface
 {
     private const OAUTH2_BE_CONFIG_TABLE = 'tx_oauth2_beuser_provider_configuration';
-    const OAUTH2_LEGACY_CONFIG_TABLE = 'tx_oauth2_client_configs';
+    public const OAUTH2_LEGACY_CONFIG_TABLE = 'tx_oauth2_client_configs';
     private ConnectionPool $connectionPool;
     private OutputInterface $output;
 
@@ -64,7 +64,7 @@ class RenameClientConfigsTableUpdateWizard20220122130120 implements UpgradeWizar
         $connection = $this->connectionPool->getConnectionForTable(self::OAUTH2_BE_CONFIG_TABLE);
         foreach ($this->findAllFromLegacyTable() as $row) {
             $connection->insert(self::OAUTH2_BE_CONFIG_TABLE, $row);
-            $lastInsertId = (int)$connection->lastInsertId(self::OAUTH2_BE_CONFIG_TABLE);
+            $lastInsertId = (int)$connection->lastInsertId();
             if ($lastInsertId === (int)$row['uid']) {
                 $this->output->writeln(sprintf('Record with uid %s was migrated', $row['uid']));
                 $deletions = $connection->delete(self::OAUTH2_LEGACY_CONFIG_TABLE, ['uid' => (int)$row['uid']]);
@@ -84,7 +84,8 @@ class RenameClientConfigsTableUpdateWizard20220122130120 implements UpgradeWizar
 
     public function updateNecessary(): bool
     {
-        return $this->tableExists(self::OAUTH2_LEGACY_CONFIG_TABLE) && $this->tableIsEmpty(self::OAUTH2_BE_CONFIG_TABLE);
+        return $this->tableExists(self::OAUTH2_LEGACY_CONFIG_TABLE)
+            && $this->tableIsEmpty(self::OAUTH2_BE_CONFIG_TABLE);
     }
 
     public function getPrerequisites(): array
@@ -114,16 +115,12 @@ class RenameClientConfigsTableUpdateWizard20220122130120 implements UpgradeWizar
                 yield $row;
             }
         }
-
-        return;
     }
 
     private function tableExists(string $tableName): bool
     {
-        return $this->connectionPool
-            ->getConnectionForTable($tableName)
-            ->getSchemaManager()
-            ->tablesExist([$tableName]);
+        $schemaManager = $this->connectionPool->getConnectionForTable($tableName)->createSchemaManager();
+        return $schemaManager->tablesExist([$tableName]);
     }
 
     private function tableIsEmpty(string $tableName): bool

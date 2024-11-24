@@ -1,5 +1,9 @@
 <?php
 
+use Waldhacker\Oauth2Client\Controller\Backend\ManageProvidersController;
+use Waldhacker\Oauth2Client\Controller\Backend\Registration\AuthorizeController;
+use Waldhacker\Oauth2Client\Controller\Backend\Registration\VerifyController;
+
 return [
     'oauth2_registration_authorize' => [
         'path' => '/oauth2/callback/handle',
@@ -13,14 +17,14 @@ return [
                 'state' => true
             ]
         ],
-        'target' => \Waldhacker\Oauth2Client\Controller\Backend\Registration\AuthorizeController::class . '::handleRequest',
+        'target' => AuthorizeController::class . '::handleRequest',
     ],
     'oauth2_registration_verify' => [
         'path' => '/oauth2/callback/verify',
-        'target' => \Waldhacker\Oauth2Client\Controller\Backend\Registration\VerifyController::class,
+        'target' => VerifyController::class,
     ],
     'oauth2_manage_providers' => [
         'path' => '/oauth2/manage/providers',
-        'target' => \Waldhacker\Oauth2Client\Controller\Backend\ManageProvidersController::class,
+        'target' => ManageProvidersController::class,
     ]
 ];

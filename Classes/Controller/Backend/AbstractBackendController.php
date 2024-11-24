@@ -26,9 +26,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AbstractBackendController
 {
-    protected function addFlashMessage(string $message, string $title = '', ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::INFO): void
-    {
-        GeneralUtility::makeInstance(FlashMessageService::class)->getMessageQueueByIdentifier()->enqueue(
+    protected function addFlashMessage(
+        string $message,
+        string $title = '',
+        ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::INFO
+    ): void {
+        /** @var FlashMessageService $flashMessageService */
+        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+        $flashMessageService->getMessageQueueByIdentifier()->enqueue(
             GeneralUtility::makeInstance(FlashMessage::class, $message, $title, $severity, true)
         );
     }

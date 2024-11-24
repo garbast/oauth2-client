@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace Waldhacker\Oauth2Client\Controller\Frontend;
 
+use Exception;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -42,30 +43,15 @@ class RegistrationController implements LoggerAwareInterface
         'verify',
     ];
 
-    private Oauth2Service $oauth2Service;
-    private Oauth2ProviderManager $oauth2ProviderManager;
-    private FrontendUserRepository $frontendUserRepository;
-    private SessionManager $sessionManager;
-    private SiteService $siteService;
-    private ResponseFactoryInterface $responseFactory;
-    private Context $context;
-
     public function __construct(
-        Oauth2Service $oauth2Service,
-        Oauth2ProviderManager $oauth2ProviderManager,
-        FrontendUserRepository $frontendUserRepository,
-        SessionManager $sessionManager,
-        SiteService $siteService,
-        ResponseFactoryInterface $responseFactory,
-        Context $context
+        private readonly Oauth2Service $oauth2Service,
+        private readonly Oauth2ProviderManager $oauth2ProviderManager,
+        private readonly FrontendUserRepository $frontendUserRepository,
+        private readonly SessionManager $sessionManager,
+        private readonly SiteService $siteService,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly Context $context
     ) {
-        $this->oauth2Service = $oauth2Service;
-        $this->oauth2ProviderManager = $oauth2ProviderManager;
-        $this->frontendUserRepository = $frontendUserRepository;
-        $this->sessionManager = $sessionManager;
-        $this->siteService = $siteService;
-        $this->responseFactory = $responseFactory;
-        $this->context = $context;
     }
 
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
@@ -107,10 +93,19 @@ class RegistrationController implements LoggerAwareInterface
         return $this->sessionManager->appendOAuth2CookieToResponse($response, $request);
     }
 
-    private function verify(string $providerId, string $code, string $state, ServerRequestInterface $request): ResponseInterface
-    {
-        $originalRequestData = $this->sessionManager->getSessionData(SessionManager::SESSION_NAME_ORIGINAL_REQUEST, $request);
-        $warningRedirectUri = empty($originalRequestData) ? $this->siteService->getBaseUri() : $originalRequestData['uri'];
+    private function verify(
+        string $providerId,
+        string $code,
+        string $state,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $originalRequestData = $this->sessionManager->getSessionData(
+            SessionManager::SESSION_NAME_ORIGINAL_REQUEST,
+            $request
+        );
+        $warningRedirectUri = empty($originalRequestData)
+            ? $this->siteService->getBaseUri()
+            : $originalRequestData['uri'];
         if (empty($code) || empty($state)) {
             return $this->redirectWithWarning($warningRedirectUri, $request);
         }
@@ -140,7 +135,7 @@ class RegistrationController implements LoggerAwareInterface
         if ($remoteUser instanceof ResourceOwnerInterface) {
             try {
                 $this->frontendUserRepository->persistIdentityForUser($providerId, (string)$remoteUser->getId());
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 return $this->redirectWithWarning($warningRedirectUri, $request);
             }
         } else {

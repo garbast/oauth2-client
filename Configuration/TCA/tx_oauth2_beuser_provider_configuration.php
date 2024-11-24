@@ -16,7 +16,8 @@
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:tx_oauth2_beuser_provider_configuration',
+        'title' =>
+            'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:tx_oauth2_beuser_provider_configuration',
         'label' => 'provider',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',

@@ -22,8 +22,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
-use TYPO3\CMS\Core\Database\Query\Restriction\EnforceableQueryRestrictionInterface;
-use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionInterface;
+use TYPO3\CMS\Core\Database\Query\Restriction\EnforceableQueryRestrictionInterface as EnforceableQueryRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionInterface as QueryRestriction;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -31,8 +31,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Allow access only to tx_oauth2_feuser_provider_configuration records that were created
  * for the current logged in frontend user.
  */
-class Oauth2FeUserProviderConfigurationRestriction implements QueryRestrictionInterface, EnforceableQueryRestrictionInterface
+class Oauth2FeUserProviderConfigurationRestriction implements QueryRestriction, EnforceableQueryRestriction
 {
+    private const OAUTH2_FE_TABLE = 'tx_oauth2_feuser_provider_configuration';
     private int $frontendUserId;
     private bool $isBackendUser;
 
@@ -58,7 +59,9 @@ class Oauth2FeUserProviderConfigurationRestriction implements QueryRestrictionIn
     public function buildExpression(array $queriedTables, ExpressionBuilder $expressionBuilder): CompositeExpression
     {
         $constraints = [];
-        $userWithEditRightsColumn = $GLOBALS['TCA']['tx_oauth2_feuser_provider_configuration']['ctrl']['enablecolumns']['fe_user'] ?? 'parentid';
+        $userWithEditRightsColumn = $GLOBALS['TCA'][
+            self::OAUTH2_FE_TABLE
+        ]['ctrl']['enablecolumns']['fe_user'] ?? 'parentid';
 
         foreach ($queriedTables as $tableAlias => $tableName) {
             if ($tableName !== 'tx_oauth2_feuser_provider_configuration' || $this->isBackendUser) {

@@ -37,15 +37,20 @@ class DataHandlerHook implements DataHandlerCheckModifyAccessListHookInterface
     }
 
     /**
-     * Restrict data handler operations on tx_oauth2_beuser_provider_configuration and tx_oauth2_feuser_provider_configuration records.
+     * Restrict data handler operations on tx_oauth2_beuser_provider_configuration
+     * and tx_oauth2_feuser_provider_configuration records.
      *
      * @see \Waldhacker\Oauth2Client\Repository\BackendUserRepository::persistIdentityForUser
      * @see \Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2BeUserProviderConfigurationRestriction
      *
      * @param string|int $id
      */
-    public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, string $table, $id, DataHandler $dataHandler): void
-    {
+    public function processDatamap_preProcessFieldArray(
+        array &$incomingFieldArray,
+        string $table,
+        $id,
+        DataHandler $_
+    ): void {
         $isNew = is_string($id) && !empty($id) && strncasecmp($id, 'NEW', 3) === 0;
 
         // Invalidate every attempt to create or modify frontend OAuth2 client configs via data handler.
@@ -54,7 +59,8 @@ class DataHandlerHook implements DataHandlerCheckModifyAccessListHookInterface
             return;
         }
         if ($table === self::OAUTH2_FE_TABLE) {
-            $userWithEditRightsColumn = $GLOBALS['TCA'][self::OAUTH2_FE_TABLE]['ctrl']['enablecolumns']['fe_user'] ?? 'parentid';
+            $userWithEditRightsColumn = $GLOBALS['TCA'][self::OAUTH2_FE_TABLE]['ctrl']['enablecolumns']['fe_user']
+                ?? 'parentid';
             if ($isNew) {
                 $incomingFieldArray = [
                     'pid' => 0,
@@ -70,9 +76,11 @@ class DataHandlerHook implements DataHandlerCheckModifyAccessListHookInterface
         }
 
         if ($table === self::OAUTH2_BE_TABLE) {
-            $userWithEditRightsColumn = $GLOBALS['TCA'][self::OAUTH2_BE_TABLE]['ctrl']['enablecolumns']['be_user'] ?? 'parentid';
+            $userWithEditRightsColumn = $GLOBALS['TCA'][self::OAUTH2_BE_TABLE]['ctrl']['enablecolumns']['be_user']
+                ?? 'parentid';
             if ($isNew) {
-                // Only allow to set the properties "provider" and "identifier" for new backend OAuth2 client configs via data handler.
+                // Only allow to set the properties "provider" and "identifier"
+                // for new backend OAuth2 client configs via data handler.
                 $incomingFieldArray = array_intersect_key($incomingFieldArray, array_flip(['provider', 'identifier']));
                 if (!$this->oauth2ProviderManager->hasBackendProvider($incomingFieldArray['provider'] ?? '')) {
                     $incomingFieldArray = [
@@ -98,12 +106,19 @@ class DataHandlerHook implements DataHandlerCheckModifyAccessListHookInterface
      * @see \Waldhacker\Oauth2Client\Backend\Form\RenderType\Oauth2ProvidersElement
      * @see \Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2BeUserProviderConfigurationRestriction
      *
-     * @param string|int $id
-     * @param mixed $value
-     * @param bool|string $pasteUpdate
+     * @param string|int $_
+     * @param mixed $_1
+     * @param bool|string $_3
      */
-    public function processCmdmap(string $command, string $table, $id, $value, bool &$commandIsProcessed, DataHandler $dataHandler, $pasteUpdate): void
-    {
+    public function processCmdmap(
+        string $command,
+        string $table,
+        $_,
+        $_1,
+        bool &$commandIsProcessed,
+        DataHandler $_2,
+        $_3
+    ): void {
         if ($table === self::OAUTH2_BE_TABLE || $table === self::OAUTH2_FE_TABLE) {
             $commandIsProcessed = strtolower($command) !== 'delete';
         }

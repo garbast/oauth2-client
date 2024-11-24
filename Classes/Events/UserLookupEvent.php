@@ -25,24 +25,13 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
  */
 final class UserLookupEvent
 {
-    private ResourceOwnerInterface $resourceOwner;
-    private ?array $userRecord;
-    private string $providerId;
-    private string $code;
-    private string $state;
-
     public function __construct(
-        string $providerId,
-        ResourceOwnerInterface $resourceOwner,
-        ?array $userRecord,
-        string $code,
-        string $state
+        private readonly string $providerId,
+        private readonly ResourceOwnerInterface $resourceOwner,
+        private ?array $userRecord,
+        private readonly string $code,
+        private readonly string $state
     ) {
-        $this->resourceOwner = $resourceOwner;
-        $this->userRecord = $userRecord;
-        $this->providerId = $providerId;
-        $this->code = $code;
-        $this->state = $state;
     }
 
     /**

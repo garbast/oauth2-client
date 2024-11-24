@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace Waldhacker\Oauth2Client\Controller\Backend\Registration;
 
+use Exception;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -33,30 +34,15 @@ use Waldhacker\Oauth2Client\Session\SessionManager;
 
 class VerifyController extends AbstractBackendController
 {
-    private Oauth2Service $oauth2Service;
-    private BackendUserRepository $backendUserRepository;
-    private SessionManager $sessionManager;
-    private UriBuilder $uriBuilder;
-    private ResponseFactoryInterface $responseFactory;
-    private Oauth2ProviderManager $oauth2ProviderManager;
-    private Context $context;
-
     public function __construct(
-        Oauth2Service $oauth2Service,
-        BackendUserRepository $backendUserRepository,
-        SessionManager $sessionManager,
-        UriBuilder $uriBuilder,
-        ResponseFactoryInterface $responseFactory,
-        Oauth2ProviderManager $oauth2ProviderManager,
-        Context $context
+        private readonly Oauth2Service $oauth2Service,
+        private readonly BackendUserRepository $backendUserRepository,
+        private readonly SessionManager $sessionManager,
+        private readonly UriBuilder $uriBuilder,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly Oauth2ProviderManager $oauth2ProviderManager,
+        private readonly Context $context
     ) {
-        $this->oauth2Service = $oauth2Service;
-        $this->backendUserRepository = $backendUserRepository;
-        $this->sessionManager = $sessionManager;
-        $this->uriBuilder = $uriBuilder;
-        $this->responseFactory = $responseFactory;
-        $this->oauth2ProviderManager = $oauth2ProviderManager;
-        $this->context = $context;
     }
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
@@ -109,17 +95,18 @@ class VerifyController extends AbstractBackendController
         if ($remoteUser instanceof ResourceOwnerInterface) {
             try {
                 $this->backendUserRepository->persistIdentityForUser($providerId, (string)$remoteUser->getId());
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 return $this->redirectWithWarning($request);
             }
         } else {
             return $this->redirectWithWarning($request);
         }
 
+        $languageFile = 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:';
         $this->sessionManager->removeSessionData($request);
         $this->addFlashMessage(
-            $this->getLanguageService()->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:flash.providerConfigurationAdded.description'),
-            $this->getLanguageService()->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:flash.providerConfigurationAdded.title'),
+            $this->getLanguageService()->sL($languageFile . 'flash.providerConfigurationAdded.description'),
+            $this->getLanguageService()->sL($languageFile . 'flash.providerConfigurationAdded.title'),
             ContextualFeedbackSeverity::OK
         );
 
@@ -132,10 +119,11 @@ class VerifyController extends AbstractBackendController
 
     private function redirectWithWarning(ServerRequestInterface $request): ResponseInterface
     {
+        $languageFile = 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:';
         $this->sessionManager->removeSessionData($request);
         $this->addFlashMessage(
-            $this->getLanguageService()->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:flash.providerConfigurationFailed.description'),
-            $this->getLanguageService()->sL('LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:flash.providerConfigurationFailed.title'),
+            $this->getLanguageService()->sL($languageFile . 'flash.providerConfigurationFailed.description'),
+            $this->getLanguageService()->sL($languageFile . 'flash.providerConfigurationFailed.title'),
             ContextualFeedbackSeverity::WARNING
         );
 

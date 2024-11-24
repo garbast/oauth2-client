@@ -1,5 +1,7 @@
 <?php
 
+use Waldhacker\Oauth2Client\Backend\SiteConfig\ConfiguredFrontendProvidersItemsProcFunc;
+
 defined('TYPO3') or die();
 
 (static function () {
@@ -11,7 +13,7 @@ defined('TYPO3') or die();
             'type' => 'select',
             'renderType' => 'selectMultipleSideBySide',
             'items' => [],
-            'itemsProcFunc' => \Waldhacker\Oauth2Client\Backend\SiteConfig\ConfiguredFrontendProvidersItemsProcFunc::class . '->getItems',
+            'itemsProcFunc' => ConfiguredFrontendProvidersItemsProcFunc::class . '->getItems',
             'default' => '',
         ],
     ];

@@ -23,7 +23,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\ServerRequestFactory;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use Waldhacker\Oauth2Client\Frontend\RedirectRequestService;
@@ -34,27 +33,14 @@ use Waldhacker\Oauth2Client\Session\SessionManager;
 
 class ManageProvidersController extends ActionController
 {
-    private Oauth2ProviderManager $oauth2ProviderManager;
-    private SiteService $siteService;
-    private FrontendUserRepository $frontendUserRepository;
-    private SessionManager $sessionManager;
-    private RedirectRequestService $redirectRequestService;
-    private Context $context;
-
     public function __construct(
-        Oauth2ProviderManager $oauth2ProviderManager,
-        SiteService $siteService,
-        FrontendUserRepository $frontendUserRepository,
-        SessionManager $sessionManager,
-        RedirectRequestService $redirectRequestService,
-        Context $context
+        private readonly Oauth2ProviderManager $oauth2ProviderManager,
+        private readonly SiteService $siteService,
+        private readonly FrontendUserRepository $frontendUserRepository,
+        private readonly SessionManager $sessionManager,
+        private readonly RedirectRequestService $redirectRequestService,
+        private readonly Context $context
     ) {
-        $this->oauth2ProviderManager = $oauth2ProviderManager;
-        $this->siteService = $siteService;
-        $this->frontendUserRepository = $frontendUserRepository;
-        $this->sessionManager = $sessionManager;
-        $this->redirectRequestService = $redirectRequestService;
-        $this->context = $context;
     }
 
     public function listAction(): ?ResponseInterface
@@ -62,7 +48,10 @@ class ManageProvidersController extends ActionController
         /** @var ServerRequestInterface $serverRequest */
         $serverRequest = $this->request;
 
-        if ($this->context->getAspect('frontend.user')->isLoggedIn() && $this->typo3UserIsWithinConfiguredStorage($serverRequest)) {
+        if (
+            $this->context->getAspect('frontend.user')->isLoggedIn()
+            && $this->typo3UserIsWithinConfiguredStorage($serverRequest)
+        ) {
             $this->view->assignMultiple([
                 'providers' => $this->oauth2ProviderManager->getEnabledFrontendProviders(),
                 'activeProviders' => $this->frontendUserRepository->getActiveProviders()
@@ -71,10 +60,19 @@ class ManageProvidersController extends ActionController
 
         $psrResponse = $this->htmlResponse();
 
-        if ($this->context->getAspect('frontend.user')->isLoggedIn() && $this->typo3UserIsWithinConfiguredStorage($serverRequest)) {
+        if (
+            $this->context->getAspect('frontend.user')->isLoggedIn()
+            && $this->typo3UserIsWithinConfiguredStorage($serverRequest)
+        ) {
             $originalRequestData = $this->redirectRequestService->buildOriginalRequestData($serverRequest);
-            $this->sessionManager->setAndSaveSessionData(SessionManager::SESSION_NAME_ORIGINAL_REQUEST, $originalRequestData, $serverRequest);
-            $psrResponse = $psrResponse ? $this->sessionManager->appendOAuth2CookieToResponse($psrResponse, $serverRequest) : null;
+            $this->sessionManager->setAndSaveSessionData(
+                SessionManager::SESSION_NAME_ORIGINAL_REQUEST,
+                $originalRequestData,
+                $serverRequest
+            );
+            $psrResponse = $psrResponse
+                ? $this->sessionManager->appendOAuth2CookieToResponse($psrResponse, $serverRequest)
+                : null;
         }
 
         return $psrResponse;
@@ -87,15 +85,6 @@ class ManageProvidersController extends ActionController
         }
 
         $this->redirect('list');
-    }
-
-    private function getServerRequest(): ServerRequestInterface
-    {
-        $request = $GLOBALS['TYPO3_REQUEST'] ?? ServerRequestFactory::fromGlobals();
-        if (!($request instanceof ServerRequestInterface)) {
-            throw new \InvalidArgumentException(sprintf('Request must implement "%s"', ServerRequestInterface::class), 1643446511);
-        }
-        return $request;
     }
 
     private function typo3UserIsWithinConfiguredStorage(ServerRequestInterface $request): bool

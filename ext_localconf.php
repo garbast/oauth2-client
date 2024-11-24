@@ -1,12 +1,24 @@
 <?php
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+use Waldhacker\Oauth2Client\Authentication\BackendAuthenticationService;
+use Waldhacker\Oauth2Client\Authentication\FrontendAuthenticationService;
+use Waldhacker\Oauth2Client\Backend\DataHandling\DataHandlerHook;
+use Waldhacker\Oauth2Client\Backend\Form\RenderType\Oauth2ProvidersElement;
+use Waldhacker\Oauth2Client\Backend\LoginProvider\Oauth2LoginProvider;
+use Waldhacker\Oauth2Client\Controller\Frontend\ManageProvidersController;
+use Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2BeUserProviderConfigurationRestriction;
+use Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2FeUserProviderConfigurationRestriction;
+use Waldhacker\Oauth2Client\Updates\RenameClientConfigsTableUpdateWizard20220122130120;
+
 defined('TYPO3') || die();
 
 (static function () {
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    ExtensionManagementUtility::addService(
         'oauth2_client',
         'auth',
-        \Waldhacker\Oauth2Client\Authentication\BackendAuthenticationService::class,
+        BackendAuthenticationService::class,
         [
             'title' => 'OAuth2 Authentication',
             'description' => 'OAuth2 authentication for backend users',
@@ -16,14 +28,14 @@ defined('TYPO3') || die();
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'className' => \Waldhacker\Oauth2Client\Authentication\BackendAuthenticationService::class
+            'className' => BackendAuthenticationService::class
         ]
     );
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
+    ExtensionManagementUtility::addService(
         'oauth2_client',
         'auth',
-        \Waldhacker\Oauth2Client\Authentication\FrontendAuthenticationService::class,
+        FrontendAuthenticationService::class,
         [
             'title' => 'OAuth2 Authentication',
             'description' => 'OAuth2 authentication for frontend users',
@@ -33,19 +45,19 @@ defined('TYPO3') || die();
             'quality' => 50,
             'os' => '',
             'exec' => '',
-            'className' => \Waldhacker\Oauth2Client\Authentication\FrontendAuthenticationService::class
+            'className' => FrontendAuthenticationService::class
         ]
     );
 
-    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+    ExtensionUtility::configurePlugin(
         'oauth2Client',
         'ManageProviders',
-        [\Waldhacker\Oauth2Client\Controller\Frontend\ManageProvidersController::class => 'list,deactivate'],
-        [\Waldhacker\Oauth2Client\Controller\Frontend\ManageProvidersController::class => 'list,deactivate']
+        [ManageProvidersController::class => 'list,deactivate'],
+        [ManageProvidersController::class => 'list,deactivate']
     );
 
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['backend']['loginProviders'][\Waldhacker\Oauth2Client\Backend\LoginProvider\Oauth2LoginProvider::PROVIDER_ID] = [
-        'provider' => \Waldhacker\Oauth2Client\Backend\LoginProvider\Oauth2LoginProvider::class,
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['backend']['loginProviders'][Oauth2LoginProvider::PROVIDER_ID] = [
+        'provider' => Oauth2LoginProvider::class,
         'sorting' => 25,
         'iconIdentifier' => 'actions-key',
         'label' => 'LLL:EXT:oauth2_client/Resources/Private/Language/locallang_be.xlf:login.link',
@@ -54,17 +66,17 @@ defined('TYPO3') || die();
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1616684029] = [
         'nodeName' => 'oauth2providers',
         'priority' => '70',
-        'class' => \Waldhacker\Oauth2Client\Backend\Form\RenderType\Oauth2ProvidersElement::class,
+        'class' => Oauth2ProvidersElement::class,
     ];
 
-    $GLOBALS['TYPO3_CONF_VARS']['DB']['additionalQueryRestrictions'][\Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2BeUserProviderConfigurationRestriction::class] = [];
-    $GLOBALS['TYPO3_CONF_VARS']['DB']['additionalQueryRestrictions'][\Waldhacker\Oauth2Client\Database\Query\Restriction\Oauth2FeUserProviderConfigurationRestriction::class] = [];
+    $GLOBALS['TYPO3_CONF_VARS']['DB']['additionalQueryRestrictions'][Oauth2BeUserProviderConfigurationRestriction::class] = [];
+    $GLOBALS['TYPO3_CONF_VARS']['DB']['additionalQueryRestrictions'][Oauth2FeUserProviderConfigurationRestriction::class] = [];
 
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][1625556930] = \Waldhacker\Oauth2Client\Backend\DataHandling\DataHandlerHook::class;
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][1625556930] = \Waldhacker\Oauth2Client\Backend\DataHandling\DataHandlerHook::class;
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['checkModifyAccessList'][1625556930] = \Waldhacker\Oauth2Client\Backend\DataHandling\DataHandlerHook::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][1625556930] = DataHandlerHook::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][1625556930] = DataHandlerHook::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['checkModifyAccessList'][1625556930] = DataHandlerHook::class;
 
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['oauth2_client_RenameClientConfigsTableUpdateWizard20220122130120'] = \Waldhacker\Oauth2Client\Updates\RenameClientConfigsTableUpdateWizard20220122130120::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['oauth2_client_RenameClientConfigsTableUpdateWizard20220122130120'] = RenameClientConfigsTableUpdateWizard20220122130120::class;
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['oauth2_client'] = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['oauth2_client'] ?? [];
 })();

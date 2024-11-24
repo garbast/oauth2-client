@@ -40,27 +40,15 @@ class AuthorizeController implements LoggerAwareInterface
         'authorize',
         'callback',
     ];
-    private Oauth2ProviderManager $oauth2ProviderManager;
-    private Oauth2Service $oauth2Service;
-    private SessionManager $sessionManager;
-    private UriBuilder $uriBuilder;
-    private ResponseFactoryInterface $responseFactory;
-    private Context $context;
 
     public function __construct(
-        Oauth2ProviderManager $oauth2ProviderManager,
-        Oauth2Service $oauth2Service,
-        SessionManager $sessionManager,
-        UriBuilder $uriBuilder,
-        ResponseFactoryInterface $responseFactory,
-        Context $context
+        private readonly Oauth2ProviderManager $oauth2ProviderManager,
+        private readonly Oauth2Service $oauth2Service,
+        private readonly SessionManager $sessionManager,
+        private readonly UriBuilder $uriBuilder,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly Context $context
     ) {
-        $this->oauth2ProviderManager = $oauth2ProviderManager;
-        $this->oauth2Service = $oauth2Service;
-        $this->sessionManager = $sessionManager;
-        $this->uriBuilder = $uriBuilder;
-        $this->responseFactory = $responseFactory;
-        $this->context = $context;
     }
 
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
@@ -114,7 +102,9 @@ class AuthorizeController implements LoggerAwareInterface
     {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename('EXT:oauth2_client/Resources/Private/Templates/Backend/Callback.html');
-        $view->assign('path', PathUtility::getAbsoluteWebPath(GeneralUtility::getFileAbsFileName('EXT:oauth2_client/Resources/Public/JavaScript/callback.js')));
+        $view->assign('path', PathUtility::getAbsoluteWebPath(
+            GeneralUtility::getFileAbsFileName('EXT:oauth2_client/Resources/Public/JavaScript/callback.js')
+        ));
         $response = $this->responseFactory->createResponse()->withHeader('Content-Type', 'text/html; charset=utf-8');
         $response->getBody()->write($view->render());
         return $response;
