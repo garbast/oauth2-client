@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace Waldhacker\Oauth2Client\Repository;
 
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -54,11 +55,11 @@ class FrontendUserRepository
             ->join('config', 'fe_users', 'fe_users', 'config.' . $userWithEditRightsColumn . '=fe_users.uid')
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq('identifier', $qb->createNamedParameter($identifier, \PDO::PARAM_STR)),
-                    $qb->expr()->eq('provider', $qb->createNamedParameter($provider, \PDO::PARAM_STR)),
-                    $qb->expr()->neq('identifier', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, \PDO::PARAM_STR)),
-                    $qb->expr()->neq('provider', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, \PDO::PARAM_STR)),
-                    $qb->expr()->eq('fe_users.pid', $qb->createNamedParameter($storagePid, \PDO::PARAM_INT))
+                    $qb->expr()->eq('identifier', $qb->createNamedParameter($identifier, ParameterType::STRING)),
+                    $qb->expr()->eq('provider', $qb->createNamedParameter($provider, ParameterType::STRING)),
+                    $qb->expr()->neq('identifier', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, ParameterType::STRING)),
+                    $qb->expr()->neq('provider', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, ParameterType::STRING)),
+                    $qb->expr()->eq('fe_users.pid', $qb->createNamedParameter($storagePid, ParameterType::INTEGER))
                 )
             )
             ->executeQuery();
@@ -89,7 +90,7 @@ class FrontendUserRepository
             $qb->delete(self::OAUTH2_FE_CONFIG_TABLE)
                 ->where(
                     $qb->expr()->and(
-                        $qb->expr()->eq($userWithEditRightsColumn, $qb->createNamedParameter($userid, \PDO::PARAM_INT)),
+                        $qb->expr()->eq($userWithEditRightsColumn, $qb->createNamedParameter($userid, ParameterType::INTEGER)),
                         $qb->expr()->in('uid', $qb->createNamedParameter($activeConfigurationUids, Connection::PARAM_INT_ARRAY))
                     )
                 )
@@ -113,7 +114,7 @@ class FrontendUserRepository
             ->set('tx_oauth2_client_configs', count($activeProviders))
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq('uid', $qb->createNamedParameter($userid, \PDO::PARAM_INT))
+                    $qb->expr()->eq('uid', $qb->createNamedParameter($userid, ParameterType::INTEGER))
                 )
             )
             ->executeQuery();
@@ -130,9 +131,9 @@ class FrontendUserRepository
             ->join('config', 'fe_users', 'fe_users', 'config.' . $userWithEditRightsColumn . '=fe_users.uid')
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq('fe_users.uid', $qb->createNamedParameter($userid, \PDO::PARAM_INT)),
-                    $qb->expr()->neq('config.identifier', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, \PDO::PARAM_STR)),
-                    $qb->expr()->neq('config.provider', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, \PDO::PARAM_STR))
+                    $qb->expr()->eq('fe_users.uid', $qb->createNamedParameter($userid, ParameterType::INTEGER)),
+                    $qb->expr()->neq('config.identifier', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, ParameterType::STRING)),
+                    $qb->expr()->neq('config.provider', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, ParameterType::STRING))
                 )
             )
             ->executeQuery();
@@ -157,8 +158,8 @@ class FrontendUserRepository
         $qb->delete(self::OAUTH2_FE_CONFIG_TABLE)
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq($userWithEditRightsColumn, $qb->createNamedParameter($userid, \PDO::PARAM_INT)),
-                    $qb->expr()->eq('uid', $qb->createNamedParameter($providerUid, \PDO::PARAM_INT))
+                    $qb->expr()->eq($userWithEditRightsColumn, $qb->createNamedParameter($userid, ParameterType::INTEGER)),
+                    $qb->expr()->eq('uid', $qb->createNamedParameter($providerUid, ParameterType::INTEGER))
                 )
             )
             ->executeStatement();
@@ -168,7 +169,7 @@ class FrontendUserRepository
             ->set('tx_oauth2_client_configs', count($activeProviders) - 1)
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq('uid', $qb->createNamedParameter($userid, \PDO::PARAM_INT))
+                    $qb->expr()->eq('uid', $qb->createNamedParameter($userid, ParameterType::INTEGER))
                 )
             )
             ->executeStatement();
@@ -185,11 +186,11 @@ class FrontendUserRepository
             ->from(self::OAUTH2_FE_CONFIG_TABLE)
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq('identifier', $qb->createNamedParameter($identifier, \PDO::PARAM_STR)),
-                    $qb->expr()->eq('provider', $qb->createNamedParameter($provider, \PDO::PARAM_STR)),
-                    $qb->expr()->neq('identifier', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, \PDO::PARAM_STR)),
-                    $qb->expr()->neq('provider', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, \PDO::PARAM_STR)),
-                    $qb->expr()->eq($userWithEditRightsColumn, $qb->createNamedParameter($userid, \PDO::PARAM_INT))
+                    $qb->expr()->eq('identifier', $qb->createNamedParameter($identifier, ParameterType::STRING)),
+                    $qb->expr()->eq('provider', $qb->createNamedParameter($provider, ParameterType::STRING)),
+                    $qb->expr()->neq('identifier', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, ParameterType::STRING)),
+                    $qb->expr()->neq('provider', $qb->createNamedParameter(DataHandlerHook::INVALID_TOKEN, ParameterType::STRING)),
+                    $qb->expr()->eq($userWithEditRightsColumn, $qb->createNamedParameter($userid, ParameterType::INTEGER))
                 )
             )
             ->executeQuery();

@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace Waldhacker\Oauth2Client\Updates;
 
+use Doctrine\DBAL\ParameterType;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
@@ -103,7 +104,7 @@ class RenameClientConfigsTableUpdateWizard20220122130120 implements UpgradeWizar
             ->from(self::OAUTH2_LEGACY_CONFIG_TABLE)
             ->where(
                 $qb->expr()->and(
-                    $qb->expr()->eq('deleted', $qb->createNamedParameter(0, \PDO::PARAM_INT))
+                    $qb->expr()->eq('deleted', $qb->createNamedParameter(0, ParameterType::INTEGER))
                 )
             )
             ->executeQuery();
